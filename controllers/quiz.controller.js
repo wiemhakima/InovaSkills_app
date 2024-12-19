@@ -2,6 +2,7 @@ const CertificateModel = require("../models/Certificate.js");
 const QuizModel = require("../models/Quiz.js");
 
 const mongoose = require('mongoose');
+
 // const getQuiz = async (req, res) => {
 //     const { quizId } = req.params;
 //     try {

@@ -14,7 +14,14 @@ const userSchema = new mongoose.Schema({
   }, approved: {
     type: Boolean,
     default: false,
-  },
+  },testResults: [
+    {
+      testId: mongoose.Schema.Types.ObjectId,
+      score: Number,
+      percentage: Number,
+      completedAt: { type: Date, default: Date.now },
+    }
+  ],
   role: { type: String, enum: ['admin', 'user'], default: 'user' },});
 
 module.exports = mongoose.model("User", userSchema);

@@ -7,7 +7,6 @@ import {
   UsersIcon,
 } from "@heroicons/react/24/solid";
 import React from "react";
-import { Link } from "react-router-dom";
 
 const Services = () => {
   const cardClasses =
@@ -40,7 +39,8 @@ const Services = () => {
 
         {/* Services centrés sur la même ligne */}
         <div className="mt-8 flex justify-center space-x-6 overflow-x-auto">
-          <Link to="/services/consulting" className={cardClasses}>
+          {/* Service 1 */}
+          <div className={cardClasses}>
             <div className="p-6 text-center">
               <UsersIcon className="h-12 w-12 text-blue-600 mx-auto" />
               <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">
@@ -50,9 +50,10 @@ const Services = () => {
                 Bénéficiez de l’expertise de nos consultants pour transformer vos systèmes IT.
               </p>
             </div>
-          </Link>
+          </div>
 
-          <Link to="/services/web-dev" className={cardClasses}>
+          {/* Service 2 */}
+          <div className={cardClasses}>
             <CubeIcon className="h-12 w-12 text-green-600 mx-auto" />
             <div className="p-6 text-center">
               <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">
@@ -62,9 +63,10 @@ const Services = () => {
                 Créez des sites web modernes et responsives avec nos services de développement.
               </p>
             </div>
-          </Link>
+          </div>
 
-          <Link to="/services/mobile-apps" className={cardClasses}>
+          {/* Service 3 */}
+          <div className={cardClasses}>
             <DevicePhoneMobileIcon className="h-12 w-12 text-teal-600 mx-auto" />
             <div className="p-6 text-center">
               <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">
@@ -74,9 +76,10 @@ const Services = () => {
                 Développez des applications mobiles performantes pour toutes plateformes.
               </p>
             </div>
-          </Link>
+          </div>
 
-          <Link to="/services/seo" className={cardClasses}>
+          {/* Service 4 */}
+          <div className={cardClasses}>
             <CpuChipIcon className="h-12 w-12 text-purple-600 mx-auto" />
             <div className="p-6 text-center">
               <h3 className="mt-4 text-lg font-semibold text-gray-800 dark:text-white">
@@ -86,7 +89,7 @@ const Services = () => {
                 Optimisez la visibilité de votre site avec notre expertise en SEO et marketing digital.
               </p>
             </div>
-          </Link>
+          </div>
         </div>
       </div>
     </section>

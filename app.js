@@ -52,7 +52,7 @@ app.post('/create_test', testController.createTest);
 
 app.get('/tests', testController.getAllTests);
 
-// app.post('/submit_test',testController.submitTest);
+app.post('/submit_test',testController.submitTest);
 
 
 //all can aaccess 

@@ -24,6 +24,9 @@ import Test from './public/Tests/Test';
 import TelechargeCv from './public/User/TelechargeCv';
 import FeedbackForm from './public/FeedBacks/FeedbackForm';
 import FeedbackList from './public/FeedBacks/Feedbacklist';
+import GestionTest from './public/Admin/Gestion/GestionTests';
+import Propos from './public/Propos';
+import Ressources from'./public/Ressources';
 function App() {
   return (
     <Router>
@@ -48,7 +51,7 @@ function App() {
         <Route path="/cours/react" element={<ReactCourse />} />
         <Route path="/cours/flutter" element={<Flutter />} />
         <Route path="/cours/python" element={<Python />} />
-        <Route path="/Tests/Test" element={<Test />} />
+        <Route path="/Test" element={<Test />} />
         <Route path="/quiz" element={<Quiz />} />
 
        
@@ -57,6 +60,7 @@ function App() {
         <Route path="/cours" element={<GestionCours />} />
         
         <Route path="/GestionQuiz" element={<GestionQuiz />} />
+        <Route path="/GestionTest" element={<GestionTest />} />
 
         <Route
           path="/usermanagement"
@@ -67,6 +71,10 @@ function App() {
           }
         />
       <Route path="/unauthorized" element={<Unauthorized />} />
+      <Route path="/Propos" element={<Propos />} />
+      <Route path="/ressources" element={<Ressources />} />
+
+      
 
       </Routes>
     </Router>

@@ -127,27 +127,28 @@ const TestComponent = () => {
     fetchTests();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const studentId = "64b0c8329bcd9a3d4e6f8e92"; // Identifiant de l'étudiant
-    try {
-      const response = await axios.post("http://localhost:8000/submit_test", {
-        studentId,
-        testId: selectedTest._id,
-        answers,
-      });
-      setResult(response.data);
-    } catch (error) {
-      setResult({
-        message: error.response?.data?.message || "Erreur lors de la soumission",
-        score: 0,
-        percentage: 0,
-      });
-    } finally {
-      setIsModalOpen(true);
-    }
-  };
 
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  const studentId = "6763f38aa5bfc03490eca365";
+  try {
+    const response = await axios.post("http://localhost:8000/submit_test", {
+      studentId,
+      testId: selectedTest._id,
+      answers,
+    });
+    setResult(response.data);
+    setIsModalOpen(true);
+  } catch (error) {
+    setResult({
+      message: error.response?.data?.message || "Erreur lors de la soumission",
+      score: 0,
+      percentage: 0,
+    });
+    setIsModalOpen(true);
+  }
+};
   const handleAnswerChange = (index, value) => {
     setAnswers({ ...answers, [index]: value });
   };
@@ -230,7 +231,7 @@ const TestDetails = ({ test, answers, onSubmit, onAnswerChange }) => (
         </div>
       ))}
       <button type="submit" style={styles.submitButton}>
-        <FaCheckCircle style={styles.icon} /> Envoyer
+        Envoyer
       </button>
     </form>
   </div>

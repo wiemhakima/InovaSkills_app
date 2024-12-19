@@ -1,7 +1,7 @@
 const TestModel = require("../models/Test.js");
 const CertificateModel = require("../models/Certificate.js");
 const mongoose = require('mongoose');
-
+const UserModel = require("../models/user.model")
 // Créer un test
 const createTest = async (req, res) => {
   try {
@@ -63,34 +63,80 @@ const getAllTests = async (req, res) => {
 };
 
 // Soumettre un test
-// const submitTest =async (req, res) => {
-//   try {
-//     if (!req.user || !req.user._id) {
-//       return res.status(401).json({ message: "Utilisateur non authentifié" });
-//     }
+const submitTest = async (req, res) => {
+  try {
+    const { studentId, testId, answers } = req.body;
 
-//     const { testId, answers } = req.body;
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).send({ message: "ID utilisateur invalide." });
+    }
 
-//     // Validation basique des données reçues
-//     if (!testId || !answers) {
-//       return res.status(400).json({ message: "Test ID ou réponses manquantes" });
-//     }
+    if (!mongoose.Types.ObjectId.isValid(testId)) {
+      return res.status(400).send({ message: "ID du test invalide." });
+    }
 
-//     console.log(`ID Utilisateur: ${req.user._id}, Test: ${testId}, Réponses:`, answers);
+    const test = await TestModel.findById(testId);
+    if (!test) {
+      return res.status(404).send({ message: "Test introuvable." });
+    }
 
-//     // Sauvegarder les résultats (exemple simplifié)
-//     const result = {
-//       testId,
-//       userId: req.user._id,
-//       score: 80, // Exemple de score simulé
-//       percentage: 80, // Exemple de pourcentage
-//     };
+    let score = 0;
 
-//     return res.status(200).json({ message: "Test soumis avec succès", result });
-//   } catch (err) {
-//     console.error("Erreur lors de la soumission du test :", err.message);
-//     res.status(500).json({ message: "Erreur interne du serveur" });
-//   }
-// };
-module.exports = { createTest, getAllTests };
+    test.questions.forEach((q, index) => {
+      if (answers[index] && q.correctAnswer === answers[index]) {
+        score += 1;
+      }
+    });
+
+    const percentage = (score / test.questions.length) * 100;
+
+    // Enregistrer le résultat dans le profil utilisateur
+    const user = await UserModel.findById(studentId);
+    if (!user) {
+      return res.status(404).send({ message: "Utilisateur introuvable." });
+    }
+
+    user.testResults.push({
+      testId,
+      score,
+      percentage,
+      date: new Date(),
+    });
+
+    await user.save();
+
+    res.status(200).send({
+      message: "Test terminé et résultat enregistré.",
+      score,
+      percentage,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la soumission du test :", error);
+    res.status(500).send({
+      message: "Erreur serveur.",
+      error: error.message,
+    });
+  }
+};
+const getUserScores = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const user = await UserModel.findById(userId).select("testResults");
+    if (!user) {
+      return res.status(404).send({ message: "Utilisateur introuvable." });
+    }
+
+    res.status(200).send({
+      testResults: user.testResults,
+    });
+  } catch (error) {
+    console.error("Erreur lors de la récupération des scores :", error);
+    res.status(500).send({
+      message: "Erreur serveur.",
+      error: error.message,
+    });
+  }
+};
+module.exports = { createTest, getAllTests ,  submitTest };
 

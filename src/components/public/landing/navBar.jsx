@@ -12,6 +12,8 @@ const NavBar = () => {
     document.body.classList.toggle("dark");
   };
 
+  const activeLinkStyle = "text-blue-500 dark:text-blue-400";
+
   return (
     <header className="flex items-center justify-between py-4 px-6 shadow-md bg-white dark:bg-gray-900 duration-500">
       <nav className="flex w-full max-w-[85rem] mx-auto items-center justify-between">
@@ -29,14 +31,14 @@ const NavBar = () => {
         {/* Navigation Links */}
         <div className="hidden md:flex gap-6">
           <button
-            onClick={() => navigate("/Soltion")}
-            className="text-gray-800 dark:text-white hover:text-blue-500"
+            onClick={() => navigate("/Propos")}
+            className={`text-gray-800 dark:text-white hover:${activeLinkStyle}`}
           >
-            Nos Soltion
-          </button>   
+            À Propos
+          </button>
           <button
             onClick={() => navigate("/ressources")}
-            className="text-gray-800 dark:text-white hover:text-blue-500"
+            className={`text-gray-800 dark:text-white hover:${activeLinkStyle}`}
           >
             Ressources
           </button>
@@ -61,15 +63,23 @@ const NavBar = () => {
           </button>
 
           {/* Dark Mode Toggle */}
-          <button onClick={darkModeHandler} className="text-gray-800 dark:text-gray-300 hover:text-blue-500">
-            {dark ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
+          <button
+            onClick={darkModeHandler}
+            className="text-gray-800 dark:text-gray-300 hover:text-blue-500"
+            aria-label="Toggle dark mode"
+          >
+            {dark ? (
+              <SunIcon className="h-6 w-6" />
+            ) : (
+              <MoonIcon className="h-6 w-6" />
+            )}
           </button>
 
           {/* Responsive Toggle */}
           <button
             type="button"
             className="block md:hidden p-2.5 text-gray-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-            aria-label="Toggle navigation"
+            aria-label="Toggle navigation menu"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -78,7 +88,12 @@ const NavBar = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
         </div>

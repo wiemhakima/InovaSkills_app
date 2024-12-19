@@ -1,278 +1,329 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 import Nav from '../../../components/public/landing/nav';
 
-function GestionQuiz() {
-  const [quizzes, setQuizzes] = useState([]);
-  const [newQuizTitle, setNewQuizTitle] = useState('');
-  const [passingScore, setPassingScore] = useState('');
-  const [newQuizQuestions, setNewQuizQuestions] = useState([{ question: '', answer: '' }]);
-  const [editQuiz, setEditQuiz] = useState(null);
-  const [error, setError] = useState(null);
+const GestionQuiz = () => {
+  const [title, setTitle] = useState("");
+  const [passingScore, setPassingScore] = useState(70);
+  const [questions, setQuestions] = useState([{ question: "", options: ["", ""], correctAnswer: "" }]);
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Récupérer la liste des quiz
-  const fetchQuizzes = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get('http://localhost:8000/quizzes');
-      setQuizzes(response.data);
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-      setError('Erreur lors de la récupération des quiz.');
-      setLoading(false);
+  const handleChange = (index, field, value, optionIndex = null) => {
+    const updatedQuestions = [...questions];
+    if (field === "option") {
+      updatedQuestions[index].options[optionIndex] = value;
+    } else {
+      updatedQuestions[index][field] = value;
     }
+    setQuestions(updatedQuestions);
   };
 
-  useEffect(() => {
-    fetchQuizzes();
-  }, []);
+  const validateForm = () => {
+    if (!title.trim()) {
+      setMessage("Le titre du quiz est obligatoire.");
+      return false;
+    }
+    if (passingScore < 0 || passingScore > 100) {
+      setMessage("Le score de réussite doit être entre 0 et 100.");
+      return false;
+    }
+    for (const question of questions) {
+      if (!question.question.trim()) {
+        setMessage("Chaque question doit avoir un texte.");
+        return false;
+      }
+      if (question.options.length < 2 || question.options.some((opt) => !opt.trim())) {
+        setMessage("Chaque question doit avoir au moins deux options valides.");
+        return false;
+      }
+      if (!question.correctAnswer.trim()) {
+        setMessage("Chaque question doit avoir une réponse correcte.");
+        return false;
+      }
+    }
+    return true;
+  };
 
-  // Fonction pour ajouter un quiz
-  const handleAddQuiz = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const newQuiz = {
-      title: newQuizTitle,
-      passingScore: passingScore,
-      questions: newQuizQuestions,
-    };
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/quizzes', newQuiz);
-      setQuizzes([...quizzes, response.data]);
-      setNewQuizTitle('');
-      setPassingScore('');
-      setNewQuizQuestions([{ question: '', answer: '' }]);
-      setLoading(false);
-    } catch (err) {
-      console.error('Erreur', err);
-      setError('Erreur lors de l\'ajout du quiz.');
-      setLoading(false);
-    }
-  };
-
-  // Fonction pour modifier un quiz
-  const handleUpdateQuiz = async (e) => {
-    e.preventDefault();
-
-    if (!editQuiz._id) {
-      console.error('ID du quiz introuvable.');
-      setError('ID du quiz incorrecte.');
-      return;
-    }
-
-    const updatedQuiz = {
-      title: editQuiz.title,
-      passingScore: editQuiz.passingScore,
-      questions: editQuiz.questions,
-    };
-
-    setLoading(true);
-    try {
-      const response = await axios.put(`http://localhost:8000/quizzes/${editQuiz._id}`, updatedQuiz);
-      fetchQuizzes();
-      setEditQuiz(null);
-      setLoading(false);
-    } catch (err) {
-      console.error('Erreur lors de la mise à jour', err);
-      setError('Erreur lors de la mise à jour du quiz.');
+      const response = await axios.post("http://localhost:8000/quizzes", { title, passingScore, questions });
+      setMessage("Quiz créé avec succès !");
+      setTitle("");
+      setPassingScore(70);
+      setQuestions([{ question: "", options: ["", ""], correctAnswer: "" }]);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Erreur lors de la création du quiz.");
+    } finally {
       setLoading(false);
     }
   };
 
-  // Fonction pour supprimer un quiz
-  const handleDeleteQuiz = async (id) => {
-    setLoading(true);
-    try {
-      await axios.delete(`http://localhost:8000/quizzes/${id}`);
-      setQuizzes(quizzes.filter((quiz) => quiz._id !== id));
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-      setError('Erreur lors de la suppression du quiz.');
-      setLoading(false);
-    }
+  const addOption = (qIndex) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[qIndex].options.push("");
+    setQuestions(updatedQuestions);
   };
 
-  // Fonction pour gérer le changement de question
-  const handleQuestionChange = (index, value) => {
-    const updatedQuestions = [...newQuizQuestions];
-    updatedQuestions[index].question = value;
-    setNewQuizQuestions(updatedQuestions);
+  const removeOption = (qIndex, oIndex) => {
+    const updatedQuestions = [...questions];
+    updatedQuestions[qIndex].options.splice(oIndex, 1);
+    setQuestions(updatedQuestions);
   };
 
-  // Fonction pour gérer le changement de réponse
-  const handleAnswerChange = (index, value) => {
-    const updatedQuestions = [...newQuizQuestions];
-    updatedQuestions[index].answer = value;
-    setNewQuizQuestions(updatedQuestions);
+  const addQuestion = () => {
+    setQuestions([...questions, { question: "", options: ["", ""], correctAnswer: "" }]);
   };
 
-  // Fonction pour ajouter une nouvelle question
-  const handleAddQuestion = () => {
-    setNewQuizQuestions([...newQuizQuestions, { question: '', answer: '' }]);
+  const removeQuestion = (qIndex) => {
+    const updatedQuestions = questions.filter((_, index) => index !== qIndex);
+    setQuestions(updatedQuestions);
   };
 
   return (
     <>
       <Nav />
-      <div className="min-h-screen bg-gray-100 p-6">
-        <h1 className="text-3xl font-bold text-center mb-8 text-indigo-600">Gestion des Quiz</h1>
-
-        {error && (
-          <div className="text-red-600 bg-red-100 p-4 rounded-lg mb-6 shadow-md">
-            <strong>Erreur : </strong> {error}
-          </div>
-        )}
-
-        {/* Formulaire pour ajouter un quiz */}
-        <form
-          onSubmit={handleAddQuiz}
-          className="flex flex-col md:flex-row md:space-x-4 bg-white p-4 rounded-lg shadow-lg mb-8"
-        >
-          <input
-            type="text"
-            value={newQuizTitle}
-            onChange={(e) => setNewQuizTitle(e.target.value)}
-            placeholder="Titre du Quiz"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 md:mb-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-          <input
-            type="number"
-            value={passingScore}
-            onChange={(e) => setPassingScore(e.target.value)}
-            placeholder="Score de réussite"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 md:mb-0"
-            required
-          />
-          <div className="space-y-4 w-full mb-4">
-            {newQuizQuestions.map((q, idx) => (
-              <div key={idx} className="flex flex-col space-y-2">
-                <input
-                  type="text"
-                  value={q.question}
-                  onChange={(e) => handleQuestionChange(idx, e.target.value)}
-                  placeholder={`Question ${idx + 1}`}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                  required
-                />
-                <input
-                  type="text"
-                  value={q.answer}
-                  onChange={(e) => handleAnswerChange(idx, e.target.value)}
-                  placeholder={`Réponse ${idx + 1}`}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                  required
-                />
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={handleAddQuestion}
-              className="px-4 py-2 text-white bg-green-500 rounded-lg hover:bg-green-600"
-            >
-              Ajouter une Question
-            </button>
-          </div>
-          <button
-            type="submit"
-            className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-          >
-            Ajouter le Quiz
-          </button>
-        </form>
-
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Liste des Quiz</h2>
-        <ul className="space-y-2">
-          {quizzes.map((quiz) => (
-            <li key={quiz._id} className="flex items-center justify-between bg-white p-4 rounded-lg shadow-md">
-              <div>
-                <p className="text-lg font-medium">Titre : {quiz.title}</p>
-                <p className="text-sm text-gray-600">Score de réussite : {quiz.passingScore}%</p>
-                <p className="text-sm text-gray-600">Questions : {quiz.questions.length}</p>
-              </div>
-              <div className="space-x-2">
-                <button
-                  onClick={() => setEditQuiz({ ...quiz })}
-                  className="px-4 py-2 text-white bg-yellow-500 rounded-lg hover:bg-yellow-600"
-                >
-                  Modifier
-                </button>
-                <button
-                  onClick={() => handleDeleteQuiz(quiz._id)}
-                  className="px-4 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600"
-                >
-                  Supprimer
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-
-        {/* Formulaire pour modifier un quiz */}
-        {editQuiz && (
-          <form onSubmit={handleUpdateQuiz} className="mt-8 bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Modifier le Quiz</h3>
+      <div className="gestion-quiz">
+        <h2 className="title">Créer un Quiz</h2>
+        <form onSubmit={handleSubmit} className="quiz-form">
+          <div className="form-group">
+            <label className="form-label">Titre du Quiz:</label>
             <input
               type="text"
-              value={editQuiz.title}
-              onChange={(e) => setEditQuiz({ ...editQuiz, title: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="form-input"
+              required
             />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Score de Réussite (%):</label>
             <input
               type="number"
-              value={editQuiz.passingScore}
-              onChange={(e) => setEditQuiz({ ...editQuiz, passingScore: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4"
+              value={passingScore}
+              onChange={(e) => setPassingScore(Number(e.target.value))}
+              className="form-input"
+              min="0"
+              max="100"
             />
-            {editQuiz.questions.map((q, idx) => (
-              <div key={idx} className="space-y-2 mb-4">
+          </div>
+          {questions.map((q, qIndex) => (
+            <div key={qIndex} className="question-block">
+              <div className="form-group">
+                <label className="form-label">Question {qIndex + 1}:</label>
                 <input
                   type="text"
                   value={q.question}
-                  onChange={(e) => {
-                    const updatedQuestions = [...editQuiz.questions];
-                    updatedQuestions[idx].question = e.target.value;
-                    setEditQuiz({ ...editQuiz, questions: updatedQuestions });
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
-                />
-                <input
-                  type="text"
-                  value={q.answer}
-                  onChange={(e) => {
-                    const updatedQuestions = [...editQuiz.questions];
-                    updatedQuestions[idx].answer = e.target.value;
-                    setEditQuiz({ ...editQuiz, questions: updatedQuestions });
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg"
+                  onChange={(e) => handleChange(qIndex, "question", e.target.value)}
+                  className="form-input"
+                  required
                 />
               </div>
-            ))}
-            <div className="flex justify-between">
-              <button
-                type="submit"
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              >
-                Mettre à jour
-              </button>
+              <div className="form-group">
+                <label className="form-label">Options:</label>
+                {q.options.map((opt, oIndex) => (
+                  <div key={oIndex} className="option-block">
+                    <input
+                      type="text"
+                      value={opt}
+                      onChange={(e) => handleChange(qIndex, "option", e.target.value, oIndex)}
+                      className="option-input"
+                      required
+                    />
+                    {q.options.length > 2 && (
+                      <button
+                        type="button"
+                        onClick={() => removeOption(qIndex, oIndex)}
+                        className="remove-option-btn"
+                      >
+                        Supprimer
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => addOption(qIndex)}
+                  className="add-option-btn"
+                >
+                  Ajouter une Option
+                </button>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Réponse Correcte:</label>
+                <input
+                  type="text"
+                  value={q.correctAnswer}
+                  onChange={(e) => handleChange(qIndex, "correctAnswer", e.target.value)}
+                  className="form-input"
+                  required
+                />
+              </div>
               <button
                 type="button"
-                onClick={() => setEditQuiz(null)}
-                className="px-6 py-3 bg-gray-400 text-white rounded-lg hover:bg-gray-500"
+                onClick={() => removeQuestion(qIndex)}
+                className="remove-question-btn"
               >
-                Annuler
+                Supprimer 
               </button>
             </div>
-          </form>
-        )}
+          ))}
+          <button type="button" onClick={addQuestion} className="add-question-btn">
+            Ajouter
+          </button>
+          <button type="submit" className="submit-btn" disabled={loading}>
+            {loading ? "Création en cours..." : "Créer le Quiz"}
+          </button>
+        </form>
+        {message && <p className="message">{message}</p>}
+        <style jsx>{`
+
+         .gestion-quiz {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;  /* Nécessaire pour utiliser 'top' */
+  top: 20px;  /* Décalage de 20px vers le bas par rapport à sa position par défaut */
+}
+
+          .title {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color:rgb(137, 85, 221);
+          }
+
+          .quiz-form {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+          }
+
+          .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+          }
+
+          .form-label {
+            font-weight: bold;
+            color: #555;
+          }
+
+          .form-input {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+          }
+
+          .form-input:focus {
+            border-color: #5c6bc0;
+          }
+
+
+        .add-option-btn,
+        .add-question-btn,
+        .submit-btn,
+        .remove-option-btn,
+        .remove-question-btn {
+          background-color: #5c6bc0;
+          color: white;
+          padding: 8px 16px; /* Réduction de l'espace autour du texte */
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 16px;
+          transition: background-color 0.3s ease;
+        }
+
+          .add-option-btn:hover,
+          .add-question-btn:hover,
+          .submit-btn:hover,
+          .remove-option-btn:hover,
+          .remove-question-btn:hover {
+            background-color: #3f4a91;
+          }
+
+          .remove-option-btn {
+            background-color: #e53935;
+          }
+
+          .remove-option-btn:hover {
+            background-color: #d32f2f;
+          }
+
+          .message {
+            color: #4caf50;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+          }
+
+          .option-block {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+          }
+
+          .option-input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+          }
+
+          .remove-question-btn {
+            background-color: #e53935;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+            width: 20%;
+          }
+
+          .remove-question-btn:hover {
+            background-color: #d32f2f;
+          }
+
+          .question-block {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            background-color: #fafafa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          .add-option-btn {
+            margin-top: 20px;
+
+          }
+
+          .add-question-btn {
+            margin-top: 20px;
+          }
+
+          .submit-btn {
+            margin-top: 20px;
+          }
+
+        `}</style>
       </div>
     </>
   );
-}
+};
 
 export default GestionQuiz;
