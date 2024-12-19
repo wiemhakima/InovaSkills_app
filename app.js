@@ -10,6 +10,7 @@ const skillsController = require("./controllers/skills.controller");
 const userController = require("./controllers/user.controller");
 const authController = require('./controllers/auth.controller');
 const { authMiddleware } = require('./middlewares/auth');
+const FeedbackController =require('./controllers/FeedbackController.js');
 
 const app = express();
 app.use(express.json());
@@ -60,7 +61,11 @@ const path = require('path');
 // Configuration pour servir les fichiers statiques
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+//feeddbacks
+app.post('/feedback',FeedbackController.addfeedback);
 
+app.get('/feedbacks',FeedbackController.getfeedbacks)
+app.delete('/feedback/:id', FeedbackController.removefeedback);
 
 
 // Middleware de gestion des erreurs globales

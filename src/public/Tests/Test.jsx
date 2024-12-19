@@ -2,88 +2,107 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Nav from "../../components/public/landing/nav"; 
+import Nav from "../../components/public/landing/nav";
+import { Alert, Container } from "react-bootstrap"; // Importation de React-Bootstrap
+import { FaExclamationTriangle, FaCheckCircle, FaClipboardList } from "react-icons/fa"; // Icônes pour les alertes et tests
 
-// Styles en CSS-in-JS
+// Styles en CSS-in-JS pour personnaliser l'apparence
 const styles = {
   wrapper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    padding: "20px",
+    padding: "40px",
     fontFamily: "'Arial', sans-serif",
     background: "linear-gradient(120deg, #e0f7fa, #fce4ec)",
     minHeight: "100vh",
     margin: 0,
   },
-  loading: {
-    fontSize: "18px",
-    color: "#555",
-    marginTop: "50px",
-  },
   container: {
     background: "white",
-    borderRadius: "8px",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    padding: "20px",
-    maxWidth: "600px",
+    borderRadius: "12px",
+    boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
+    padding: "30px",
+    maxWidth: "700px",
     width: "100%",
     textAlign: "center",
-    marginBottom: "20px",
+    marginBottom: "30px",
   },
   title: {
-    fontSize: "24px",
-    fontWeight: "bold",
+    fontSize: "28px",
+    fontWeight: "700",
     color: "#4a148c",
     marginBottom: "20px",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
   },
   button: {
     background: "#4a148c",
     color: "white",
-    padding: "10px 20px",
+    padding: "15px 30px",
     border: "none",
-    borderRadius: "4px",
-    fontSize: "16px",
+    borderRadius: "6px",
+    fontSize: "18px",
     cursor: "pointer",
-    margin: "10px 0",
+    margin: "15px 0",
+    transition: "background-color 0.3s ease, transform 0.3s ease",
   },
   buttonHover: {
     background: "#6a1b9a",
   },
   question: {
-    marginBottom: "20px",
+    marginBottom: "30px",
   },
   questionText: {
-    fontSize: "18px",
+    fontSize: "20px",
     fontWeight: "bold",
-    marginBottom: "10px",
+    marginBottom: "15px",
+    color: "#333",
   },
   option: {
     display: "flex",
     alignItems: "center",
-    margin: "5px 0",
+    margin: "10px 0",
+    fontSize: "16px",
   },
   submitButton: {
     background: "#0288d1",
     color: "white",
-    padding: "10px 20px",
+    padding: "15px 30px",
     border: "none",
-    borderRadius: "4px",
-    fontSize: "16px",
+    borderRadius: "6px",
+    fontSize: "18px",
     cursor: "pointer",
-  },
-  submitButtonHover: {
-    background: "#0277bd",
+    transition: "background-color 0.3s ease, transform 0.3s ease",
   },
   closeButton: {
     background: "#d32f2f",
     color: "white",
-    padding: "10px 20px",
+    padding: "12px 25px",
     border: "none",
-    borderRadius: "4px",
-    fontSize: "16px",
+    borderRadius: "6px",
+    fontSize: "18px",
     cursor: "pointer",
-    marginTop: "10px",
+    marginTop: "20px",
+  },
+  icon: {
+    marginRight: "8px",
+  },
+  card: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: "15px",
+    padding: "20px",
+    background: "#f1f1f1",
+    borderRadius: "10px",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+    cursor: "pointer",
+  },
+  cardHover: {
+    transform: "scale(1.05)",
+    boxShadow: "0 6px 15px rgba(0, 0, 0, 0.1)",
   },
 };
 
@@ -110,7 +129,7 @@ const TestComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const studentId = "64b0c8329bcd9a3d4e6f8e92";
+    const studentId = "64b0c8329bcd9a3d4e6f8e92"; // Identifiant de l'étudiant
     try {
       const response = await axios.post("http://localhost:8000/submit_test", {
         studentId,
@@ -145,7 +164,10 @@ const TestComponent = () => {
       <Nav /> {/* Intégration du composant Nav */}
       <div style={styles.wrapper}>
         {!tests.length ? (
-          <p style={styles.loading}>Chargement des tests...</p>
+          <Alert variant="info" style={{ maxWidth: "600px", margin: "20px" }}>
+            <Alert.Heading><FaExclamationTriangle /> Chargement des tests...</Alert.Heading>
+            <p>Veuillez patienter pendant que les tests sont chargés.</p>
+          </Alert>
         ) : !selectedTest ? (
           <TestSelection tests={tests} onSelect={setSelectedTest} />
         ) : (
@@ -170,18 +192,19 @@ const TestComponent = () => {
 const TestSelection = ({ tests, onSelect }) => (
   <div style={styles.container}>
     <h2 style={styles.title}>Sélectionnez un Test</h2>
-    <ul>
+    <div>
       {tests.map((test) => (
-        <li key={test._id}>
-          <button
-            onClick={() => onSelect(test)}
-            style={styles.button}
-          >
-            {test.title}
-          </button>
-        </li>
+        <div
+          key={test._id}
+          style={styles.card}
+          onClick={() => onSelect(test)}
+          className="test-card"
+        >
+          <FaClipboardList style={styles.icon} />
+          <strong>{test.title}</strong>
+        </div>
       ))}
-    </ul>
+    </div>
   </div>
 );
 
@@ -207,7 +230,7 @@ const TestDetails = ({ test, answers, onSubmit, onAnswerChange }) => (
         </div>
       ))}
       <button type="submit" style={styles.submitButton}>
-        Soumettre
+        <FaCheckCircle style={styles.icon} /> Envoyer
       </button>
     </form>
   </div>
@@ -228,7 +251,7 @@ const TestResultModal = ({ isOpen, result, selectedTest, closeModal }) => (
       },
     }}
   >
-    <h2>Résultat</h2>
+    <h2>{result?.percentage >= 70 ? <FaCheckCircle color="green" /> : <FaExclamationTriangle color="red" />} Résultat</h2>
     <p>{result?.message}</p>
     {result?.percentage !== undefined && (
       <>

@@ -14,6 +14,7 @@ const storage = multer.diskStorage({
 });
 
 // Filtrage pour accepter uniquement certains types de fichiers
+
 const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'application/pdf' || file.mimetype.startsWith('image/')) {
     cb(null, true);

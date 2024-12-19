@@ -93,7 +93,11 @@ const ActualiteSection = () => {
               className="group w-full max-lg:max-w-xl dark:bg-gray-800 dark:text-gray-300 lg:w-1/3 border border-gray-300 dark:border-gray-700 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white"
             >
               <div className="flex items-center">
-                <img src={course.image} alt={course.title} className="rounded-t-2xl w-full" />
+                <img 
+                  src={course.image} 
+                  alt={course.title} 
+                  className="rounded-t-2xl w-full h-56 object-cover" // Redimensionner les images
+                />
               </div>
               <div className="p-6">
                 <div className="flex items-center mb-4">

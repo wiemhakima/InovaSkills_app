@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Nav from '..//../../components/public/landing/nav';
 
-function GestionCours () {
+function GestionCours() {
   const [skills, setSkills] = useState([]); // Liste des compétences
   const [newSkill, setNewSkill] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -26,22 +27,8 @@ function GestionCours () {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:8000/skills');
-        setSkills(response.data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération", error);
-      }
-    };
-  
-    fetchData();
-    
-    return () => {
-      // Fonction vide ou un nettoyage si nécessaire
-    };
+    fetchSkills();
   }, []);
-  
 
   // Fonction pour ajouter une nouvelle compétence
   const handleAddSkill = async (e) => {
@@ -86,7 +73,6 @@ function GestionCours () {
   };
 
   // Fonction pour soumettre la mise à jour de la compétence
-  
   const handleUpdateSkill = async (e) => {
     e.preventDefault();
     
@@ -126,13 +112,14 @@ function GestionCours () {
       setLoading(false);
     }
   };
-  
-  
-  
 
   return (
+    <>
+    <Nav />
+
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-center mb-8 text-indigo-600">Gestion des compétences</h1>
+      
+      <h1 className="text-3xl font-bold text-center mb-8 text-indigo-600">Gestion des Cours</h1>
 
       {error && (
         <div className="text-red-600 bg-red-100 p-4 rounded-lg mb-6 shadow-md">
@@ -149,7 +136,7 @@ function GestionCours () {
           type="text"
           value={newSkill}
           onChange={(e) => setNewSkill(e.target.value)}
-          placeholder="Nom de la compétence"
+          placeholder="Nom de la Cour"
           className="w-full px-4 py-3 border border-gray-300 rounded-lg mb-4 md:mb-0 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
@@ -238,5 +225,8 @@ function GestionCours () {
         </form>
       )}
     </div>
+    </>
   );
-}export default GestionCours ;
+}
+
+export default GestionCours;

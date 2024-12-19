@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MoonIcon, SunIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
+import { MoonIcon, SunIcon, ChevronDownIcon, ShoppingCartIcon } from "@heroicons/react/24/solid"; // Importer ShoppingCartIcon
 import log from "../../../assets/img/log.svg";
 
 const Nav = () => {
@@ -66,50 +66,67 @@ const Nav = () => {
             href="/profil"
             className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
           >
-            Profile 
+            Profile
           </a>
 
-          {/* Afficher les liens pour les utilisateurs standard */}
           {!isAdmin && (
             <>
               <a
-                href="/quiz"
+                href="Tests/test"
                 className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
               >
                 Tests
               </a>
-            
               <a
-                href="/certificate"
+                href="/quiz"
                 className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
               >
                 Certificats
               </a>
-              
+              <a 
+                href="/feedback"
+                className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
+              >
+              commentaires
+              </a>
+              <a
+                href="/usermanagement"
+                className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
+              >
+                usermanagement
+              </a>
             </>
           )}
 
-          {/* Afficher "User Management" et "Gestion" uniquement si admin */}
           {isAdmin && (
             <>
               <a
                 href="/usermanagement"
                 className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
               >
-                User Management
+                Gestion des Utilisateurs
               </a>
               <a
                 href="/GestionAll"
                 className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
               >
-                Gestion
+                Gestion des composants
+              </a>
+              <a 
+                href="/feedbacks"
+                className="text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 font-medium"
+              >
+                Liste des commentaires
               </a>
             </>
           )}
         </div>
 
-        {/* Profile and Dark Mode Section */}
+        {/* Profile, Dark Mode, and Cart Section */}
         <div className="relative flex items-center gap-4">
+          <button className="text-gray-800 dark:text-gray-300 hover:text-blue-500">
+            <ShoppingCartIcon className="h-6 w-6" /> {/* Logo Panier */}
+          </button>
           <button onClick={darkModeHandler} className="text-gray-800 dark:text-gray-300 hover:text-blue-500">
             {dark ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
           </button>

@@ -21,6 +21,9 @@ import UserManagement from './public/Admin/Mangement/usermanagement';
 import GestionAll from './public/Admin/Gestion/GestionAll';
 import Quiz from './public/Quiz/quiz';
 import Test from './public/Tests/Test';
+import TelechargeCv from './public/User/TelechargeCv';
+import FeedbackForm from './public/FeedBacks/FeedbackForm';
+import FeedbackList from './public/FeedBacks/Feedbacklist';
 function App() {
   return (
     <Router>
@@ -32,11 +35,12 @@ function App() {
         <Route path="/Profil" element={<Profil />} />
         <Route path="user/Score" element={<Score />} />
         <Route path="user/CreateCV" element={<CreateCV />} />
-        <Route path="/cours" element={<GestionCours />} />
-
+        <Route path="profil/user/TelechargeCv" element={<TelechargeCv />} />
         <Route path="/certificate/:id" element={<Certificate />} />
-        <Route path="/GestionQuiz" element={<GestionQuiz />} />
 
+
+        <Route path="/feedback" element={<FeedbackForm />} />
+        <Route path="/feedbacks" element={<FeedbackList />} />
         {/* Routes pour les pages de cours */}
 
         <Route path="/cours/design" element={<Design />} />
@@ -45,12 +49,14 @@ function App() {
         <Route path="/cours/flutter" element={<Flutter />} />
         <Route path="/cours/python" element={<Python />} />
         <Route path="/Tests/Test" element={<Test />} />
-
         <Route path="/quiz" element={<Quiz />} />
 
        
         {/* Admin  */}
         <Route path="/GestionAll" element={<GestionAll />}/>
+        <Route path="/cours" element={<GestionCours />} />
+        
+        <Route path="/GestionQuiz" element={<GestionQuiz />} />
 
         <Route
           path="/usermanagement"

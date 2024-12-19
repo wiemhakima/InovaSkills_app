@@ -49,7 +49,7 @@ function Signup() {
           localStorage.setItem("token", response.data.token);
         }
         alert("Inscription réussie !");
-        navigate("/Landing"); // Redirection vers la page de connexion
+        navigate("/"); // Redirection vers la page de connexion
       } else {
         console.error("Erreur lors de l'inscription :", response);
         setError("Erreur lors de l'inscription. Veuillez réessayer.");

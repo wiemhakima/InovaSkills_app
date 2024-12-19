@@ -28,8 +28,18 @@ const NavBar = () => {
 
         {/* Navigation Links */}
         <div className="hidden md:flex gap-6">
-  
-      
+          <button
+            onClick={() => navigate("/Soltion")}
+            className="text-gray-800 dark:text-white hover:text-blue-500"
+          >
+            Nos Soltion
+          </button>   
+          <button
+            onClick={() => navigate("/ressources")}
+            className="text-gray-800 dark:text-white hover:text-blue-500"
+          >
+            Ressources
+          </button>
         </div>
 
         {/* Authentication and Dark Mode Section */}
